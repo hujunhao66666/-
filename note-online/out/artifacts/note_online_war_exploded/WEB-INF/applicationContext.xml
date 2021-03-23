@@ -1,0 +1,59 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+    <context:property-placeholder location="WEB-INF/jdbc.properties"/>
+
+    <!--自动扫描包-->
+    <context:component-scan base-package="com.example.controller"/>
+    <context:component-scan base-package="com.example.dao"/>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driverClassName}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <!--连接池中保留的最小连接数-->
+        <property name="minPoolSize" value="5"/>
+
+        <!--连接池中保留的最大连接数-->
+        <property name="maxPoolSize" value="30"/>
+
+        <!--初始化时获得的连接数-->
+        <property name="initialPoolSize" value="10"/>
+
+        <!--最大空闲时间-->
+        <property name="maxIdleTime" value="60"/>
+
+        <!--当连接池中的连接耗尽时，c3p0一次同时获取的连接数-->
+        <property name="acquireIncrement" value="5"/>
+
+        <!--jdbc的标准参数，用以控制数据源内加载的PreparedStatements数量，但由于预缓存的statements属于单个connection而不是整个连接池，所以设置这个参数要考虑
+        多方面因素-->
+        <property name="maxStatements" value="0"/>
+
+        <!--每60秒检查所有连接池中的空闲连接-->
+        <property name="idleConnectionTestPeriod" value="60"/>
+
+        <!--定义从数据库获取新连接失败后重复尝试的次数-->
+        <property name="acquireRetryAttempts" value="30"/>
+
+        <!--获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常，但是数据源仍有保留，并在下次调用getConnection()的时候继续尝试获取连接，如果设为true,
+        那么在尝试获取连接失败后该数据源将申明已断开并永久关闭-->
+        <property name="breakAfterAcquireFailure" value="true"/>
+
+        <!--因为性能消耗大，请只在需要的时候使用它。如果设为true,那么在每个Connection提交的时候，都将检验其有效性。-->
+        <property name="testConnectionOnCheckout" value="false"/>
+
+        
+    </bean>
+
+    <!--配置jdbc模板-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+</beans>
